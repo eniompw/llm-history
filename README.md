@@ -27,3 +27,35 @@ Key architectural milestones, 2017 to Apr 2026.
 | Jan 2025 | DeepSeek R1 (DeepSeek, open) | 671B total; 37B active; V3 arch + pure RL post-training | First open model reported to match o1-level reasoning using pure RL, without SFT warm-up. |
 | Jul 2025 | Kimi K2 (Moonshot AI, open) | 1T total; 32B active; MoE + MLA + MuonClip | 1T-scale open MoE from Moonshot AI; used MuonClip for training stability at trillion-parameter scale. |
 | Apr 2026 | Kimi K2.6 (Moonshot AI, open) | 1T total; 32B active; MoE + MLA + MuonClip, 384 experts, 256K context | Expanded to 384 experts and 256K context; highlighted agent-swarm workflows with up to 300 parallel sub-agents across 4,000 coordinated steps. |
+
+## Simplified Hybrid GPT/LLaMA Example (MicroGPT-style)
+
+This is a compact educational architecture that is GPT-2-inspired but includes a few modern LLaMA-like choices.
+
+Reference implementation: [microgpt.py](https://github.com/eniompw/microgpt/blob/main/microgpt.py)
+
+### Key Architectural Ideas
+
+- Decoder-only Transformer stack with causal self-attention.
+- Token + position embeddings at input.
+- Residual connections around attention and MLP sublayers.
+- RMSNorm (LLaMA-style) instead of LayerNorm.
+- Bias-free linear layers (LLaMA-style simplification).
+- ReLU in the MLP for simplicity (instead of GPT-2's GeLU).
+
+### Minimal Block Sketch
+
+```text
+x = tok_emb(tokens) + pos_emb(positions)
+for block in blocks:
+	x = x + SelfAttention(RMSNorm(x))
+	x = x + MLP(RMSNorm(x))
+logits = lm_head(RMSNorm(x))
+```
+
+### Why It Is Useful
+
+- Small enough to study end-to-end (roughly ~4K parameters in the referenced setup).
+- Can be implemented in a short, dependency-light script for learning.
+- Often includes a tiny tokenizer, custom autograd engine, Adam optimizer, and a basic training loop.
+- Intended as a teaching artifact, not a production model.
