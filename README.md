@@ -28,7 +28,9 @@ Key architectural milestones, 2017 to Apr 2026.
 | Jul 2025 | [Kimi K2 (Moonshot AI, open)](https://arxiv.org/abs/2507.20534) | 1T total; 32B active; MoE + MLA + MuonClip | 1T-scale open MoE from Moonshot AI; used MuonClip for training stability at trillion-parameter scale. |
 | Apr 2026 | [Kimi K2.6 (Moonshot AI, open)](https://huggingface.co/moonshotai/Kimi-K2.6) | 1T total; 32B active; MoE + MLA + MuonClip, 384 experts, 256K context | Expanded to 384 experts and 256K context; highlighted agent-swarm workflows with up to 300 parallel sub-agents across 4,000 coordinated steps. |
 
-## Simplified Hybrid GPT/LLaMA Example (MicroGPT-style)
+## How to Build Your Own LLM from Scratch
+
+### Simplified Hybrid GPT/LLaMA Example (MicroGPT-style)
 
 This is a compact educational architecture that is GPT-2-inspired but includes a few modern LLaMA-like choices.
 
@@ -42,3 +44,36 @@ Reference implementation: [microgpt.py](https://gist.github.com/karpathy/8627fe0
 - RMSNorm (LLaMA-style) instead of LayerNorm.
 - Bias-free linear layers (LLaMA-style simplification).
 - ReLU in the MLP for simplicity (instead of GPT-2's GeLU).
+
+### Quick-Start: LLaMA 2 in 4 Lines (modded-llama2.c)
+
+For end-to-end training and inference in minimal code:
+
+Reference implementation: [modded-llama2.c](https://github.com/eniompw/modded-llama2.c)
+
+```bash
+git clone https://github.com/eniompw/modded-llama2.c
+. ./modded-llama2.c/download_tinystories.sh
+cd modded-llama2.c && python train.py --max_iters=1
+./run out/model.bin -i "Once upon a time "
+```
+
+This approach:
+- Uses pure C for fast inference with no dependencies.
+- Trains on TinyStories dataset for rapid iteration.
+- Demonstrates the full LLaMA 2 recipe (RoPE, SwiGLU, RMSNorm, grouped-query attention).
+- Ideal for learning how modern LLMs train and infer end-to-end.
+
+### Enhancing MicroGPT for Modern Performance
+
+Reference implementation: [modded MicroGPT](https://github.com/eniompw/microgpt)
+
+To make MicroGPT more performant and aligned with contemporary best practices:
+
+- **FlashAttention 2**: Replace standard attention with tiled IO-aware kernels for 2–4× wall-clock speedup.
+- **Grouped-Query Attention (GQA)**: Share KV heads across query heads to reduce memory and accelerate inference bandwidth.
+- **Multi-Token Prediction (MTP)**: Train the model to predict multiple tokens per forward pass, increasing sample efficiency.
+- **FP8 Training**: Use low-precision compute during training with proper scaling and accumulation for stability.
+- **Rotary Embeddings (RoPE)**: Replace learned absolute positions with rotary positional encodings for better length generalization.
+
+These enhancements keep the educational clarity of MicroGPT while moving it closer to production-grade LLaMA 2 / DeepSeek-style architectures.
