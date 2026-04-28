@@ -1,6 +1,24 @@
 # LLM Architecture Timeline
 
-Key architectural milestones, 2017 to Apr 2026.
+A comprehensive reference for the key architectural innovations that shaped modern large language models from the Transformer (2017) through 1T-parameter models (2026), plus practical guides for building LLMs from scratch.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Architectural Milestones](#architectural-milestones)
+- [Building Your Own LLM](#building-your-own-llm)
+  - [Simplified Hybrid GPT/LLaMA Example](#simplified-hybrid-gptllama-example-microgpt-style)
+  - [Key Architectural Ideas](#key-architectural-ideas)
+  - [Quick-Start Guide](#quick-start-llama-2-in-4-lines)
+  - [Performance Enhancements](#enhancing-microgpt-for-modern-performance)
+
+## Overview
+
+This timeline documents key architectural milestones from 2017 to April 2026, tracking the evolution from the foundational Transformer architecture through the emergence of sparse mixture-of-experts (MoE) models, scaling laws, alignment techniques (RLHF), and optimization innovations like FlashAttention. Each entry highlights the core innovation and its impact on subsequent model development.
+
+## Architectural Milestones
+
+Key architectural innovations, 2017 to Apr 2026.
 
 | Date | Model / Org | Params / Architecture | Key Innovation |
 | --- | --- | --- | --- |
@@ -28,7 +46,7 @@ Key architectural milestones, 2017 to Apr 2026.
 | Jul 2025 | [Kimi K2 (Moonshot AI, open)](https://arxiv.org/abs/2507.20534) | 1T total; 32B active; MoE + MLA + MuonClip | 1T-scale open MoE from Moonshot AI; used MuonClip for training stability at trillion-parameter scale. |
 | Apr 2026 | [Kimi K2.6 (Moonshot AI, open)](https://huggingface.co/moonshotai/Kimi-K2.6) | 1T total; 32B active; MoE + MLA + MuonClip, 384 experts, 256K context | Expanded to 384 experts and 256K context; highlighted agent-swarm workflows with up to 300 parallel sub-agents across 4,000 coordinated steps. |
 
-## How to Build Your Own LLM from Scratch
+## Building Your Own LLM
 
 ### Simplified Hybrid GPT/LLaMA Example (MicroGPT-style)
 
@@ -45,7 +63,7 @@ Reference implementation: [microgpt.py](https://gist.github.com/karpathy/8627fe0
 - Bias-free linear layers (LLaMA-style simplification).
 - ReLU in the MLP for simplicity (instead of GPT-2's GeLU).
 
-### Quick-Start: LLaMA 2 in 4 Lines (modded-llama2.c)
+### Quick-Start: LLaMA 2 in 4 Lines
 
 For end-to-end training and inference in minimal code:
 
