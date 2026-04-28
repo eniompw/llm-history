@@ -25,8 +25,8 @@ Key architectural milestones, 2017 to Apr 2026.
 | Sep 2024 | [OpenAI o1 (OpenAI)](https://openai.com/o1/) | 671B total; 37B active; MoE + FP8 training + MTP | Shifted emphasis from pre-training scaling to test-time compute scaling; used RL for extended internal reasoning before answers. |
 | Dec 2024 | [DeepSeek V3 (DeepSeek, open)](https://arxiv.org/abs/2412.19437) | 671B total; 37B active; MoE + FP8 training + MTP | Auxiliary-loss-free load balancing, FP8 training, and multi-token prediction; redefined efficiency expectations. |
 | Jan 2025 | [DeepSeek R1 (DeepSeek, open)](https://arxiv.org/abs/2501.12948) | 671B total; 37B active; V3 arch + pure RL post-training | First open model reported to match o1-level reasoning using pure RL, without SFT warm-up. |
-| Jul 2025 | [Kimi K2 (Moonshot AI, open)](https://www.facebook.com/0xSojalSec/posts/kimi-k2-technical-report-moonshot-ai-is-outinitial-scan-highlights-muonclip-cust/1276666350654432) | 1T total; 32B active; MoE + MLA + MuonClip | 1T-scale open MoE from Moonshot AI; used MuonClip for training stability at trillion-parameter scale. |
-| Apr 2026 | [Kimi K2.6 (Moonshot AI, open)](https://www.kimi.com/blog/kimi-k2-6) | 1T total; 32B active; MoE + MLA + MuonClip, 384 experts, 256K context | Expanded to 384 experts and 256K context; highlighted agent-swarm workflows with up to 300 parallel sub-agents across 4,000 coordinated steps. |
+| Jul 2025 | [Kimi K2 (Moonshot AI, open)](https://arxiv.org/abs/2507.20534) | 1T total; 32B active; MoE + MLA + MuonClip | 1T-scale open MoE from Moonshot AI; used MuonClip for training stability at trillion-parameter scale. |
+| Apr 2026 | [Kimi K2.6 (Moonshot AI, open)](https://huggingface.co/moonshotai/Kimi-K2.6) | 1T total; 32B active; MoE + MLA + MuonClip, 384 experts, 256K context | Expanded to 384 experts and 256K context; highlighted agent-swarm workflows with up to 300 parallel sub-agents across 4,000 coordinated steps. |
 
 ## Simplified Hybrid GPT/LLaMA Example (MicroGPT-style)
 
