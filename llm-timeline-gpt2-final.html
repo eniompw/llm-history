@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Architecture Timeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-bg: #f7f6f2;
+  --color-surface: #f9f8f5;
+  --color-border: #d4d1ca;
+  --color-divider: #dcd9d5;
+  --color-text: #28251d;
+  --color-text-muted: #7a7974;
+  --color-text-faint: #bab9b4;
+  --color-primary: #01696f;
+  --color-primary-hover: #0c4e54;
+  --color-primary-highlight: #cedcd8;
+  --color-surface-offset: #f3f0ec;
+  --color-surface-dynamic: #e6e4df;
+  --font-body: 'Inter', 'Helvetica Neue', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-theme="dark"] {
+  --color-bg: #171614;
+  --color-surface: #1c1b19;
+  --color-border: #393836;
+  --color-divider: #262523;
+  --color-text: #cdccca;
+  --color-text-muted: #797876;
+  --color-text-faint: #5a5957;
+  --color-primary: #4f98a3;
+  --color-primary-hover: #227f8b;
+  --color-primary-highlight: #313b3b;
+  --color-surface-offset: #1d1c1a;
+  --color-surface-dynamic: #2d2c2a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --color-bg:#171614;--color-surface:#1c1b19;--color-border:#393836;
+    --color-divider:#262523;--color-text:#cdccca;--color-text-muted:#797876;
+    --color-text-faint:#5a5957;--color-primary:#4f98a3;--color-primary-hover:#227f8b;
+    --color-primary-highlight:#313b3b;--color-surface-offset:#1d1c1a;--color-surface-dynamic:#2d2c2a;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--color-text);
+  background: var(--color-bg);
+  min-height: 100dvh;
+  padding: 2rem 1.5rem;
+  transition: background var(--transition), color var(--transition);
+}
+header {
+  max-width: 1100px;
+  margin: 0 auto 1.25rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+h1 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; }
+.subtitle { font-size: 0.78rem; color: var(--color-text-muted); margin-top: 0.15rem; }
+.toggle-btn {
+  background: var(--color-surface-offset);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.25rem 0.65rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: background var(--transition), color var(--transition);
+  white-space: nowrap;
+}
+.toggle-btn:hover { background: var(--color-surface-dynamic); color: var(--color-text); }
+
+.table-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-surface);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+col.c-date  { width: 7%; }
+col.c-model { width: 16%; }
+col.c-spec  { width: 24%; }
+col.c-key   { width: 53%; }
+
+thead tr {
+  background: var(--color-surface-offset);
+  border-bottom: 1px solid var(--color-border);
+}
+th {
+  padding: 0.45rem 0.75rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-align: left;
+}
+td {
+  padding: 0.45rem 0.75rem;
+  vertical-align: top;
+  border-bottom: 1px solid var(--color-divider);
+  line-height: 1.45;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr { transition: background var(--transition); }
+tbody tr:hover { background: oklch(from var(--color-primary) l c h / 0.04); }
+
+.date {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+.model-name {
+  font-weight: 600;
+  font-size: 0.8125rem;
+  color: var(--color-text);
+  display: block;
+}
+.org {
+  font-size: 0.72rem;
+  color: var(--color-text-faint);
+  margin-top: 0.1rem;
+  display: block;
+}
+.params {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-text);
+  display: block;
+}
+.arch {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  margin-top: 0.15rem;
+  display: block;
+  line-height: 1.4;
+}
+.key { font-size: 0.8rem; color: var(--color-text); line-height: 1.5; }
+.note {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  margin-top: 0.35rem;
+  display: block;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.05rem 0.3rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  margin-left: 0.3rem;
+  vertical-align: middle;
+  line-height: 1.6;
+}
+.tag-unconfirmed {
+  background: oklch(0.88 0.06 60);
+  color: oklch(0.38 0.08 55);
+}
+[data-theme="dark"] .tag-unconfirmed {
+  background: oklch(0.28 0.06 60);
+  color: oklch(0.72 0.08 55);
+}
+.tag-open {
+  background: var(--color-primary-highlight);
+  color: var(--color-primary-hover);
+}
+.row-milestone td { background: oklch(from var(--color-primary) l c h / 0.025); }
+tbody tr.row-milestone:hover td { background: oklch(from var(--color-primary) l c h / 0.055); }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>LLM Architecture Timeline</h1>
+    <p class="subtitle">Key architectural milestones · 2017 – Apr 2026</p>
+  </div>
+  <button class="toggle-btn" data-theme-toggle aria-label="Switch to dark mode">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    Dark mode
+  </button>
+</header>
+
+<div class="table-wrap">
+  <table>
+    <colgroup>
+      <col class="c-date">
+      <col class="c-model">
+      <col class="c-spec">
+      <col class="c-key">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Model / Org</th>
+        <th>Params / Architecture</th>
+        <th>Key Innovation</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td class="date">Jun 2017</td>
+        <td><span class="model-name">Transformer</span><span class="org">Google Brain</span></td>
+        <td><span class="params">—</span><span class="arch">Encoder-Decoder Attention</span></td>
+        <td class="key">"Attention Is All You Need" — foundational architecture every LLM descends from.</td>
+      </tr>
+
+      <tr>
+        <td class="date">Jun 2018</td>
+        <td><span class="model-name">GPT-1</span><span class="org">OpenAI</span></td>
+        <td><span class="params">117M</span><span class="arch">Decoder-only Transformer</span></td>
+        <td class="key">Introduced the decoder-only pretrain-then-finetune paradigm; showed unsupervised pretraining on text transfers well to downstream tasks.</td>
+      </tr>
+
+      <tr>
+        <td class="date">Feb 2019</td>
+        <td><span class="model-name">GPT-2</span><span class="org">OpenAI</span></td>
+        <td><span class="params">1.5B</span><span class="arch">Decoder-only Transformer</span></td>
+        <td class="key">Scaled GPT-1's recipe; sparked mainstream AI awareness through its infamous staged release over safety concerns; open-sourced in full on GitHub.</td>
+      </tr>
+
+      <tr>
+        <td class="date">Oct 2019</td>
+        <td><span class="model-name">RMSNorm</span><span class="org">Zhang &amp; Sennrich</span></td>
+        <td><span class="params">—</span><span class="arch">Normalization layer</span></td>
+        <td class="key">Dropped LayerNorm's re-centering step while preserving scaling stability; later became standard in LLaMA-style decoder LLMs.</td>
+      </tr>
+
+      
+
+      <tr>
+        <td class="date">Feb 2020</td>
+        <td><span class="model-name">SwiGLU</span><span class="org">Shazeer (Google)</span></td>
+        <td><span class="params">—</span><span class="arch">Activation function</span></td>
+        <td class="key">Replaced ReLU/GeLU in FFN layers with a gated variant; better gradient flow; later adopted by PaLM, LLaMA, and most modern decoder models.</td>
+      </tr>
+
+      <tr>
+        <td class="date">May 2020</td>
+        <td><span class="model-name">GPT-3</span><span class="org">OpenAI</span></td>
+        <td><span class="params">175B</span><span class="arch">Dense decoder + pre-norm</span></td>
+        <td class="key">Demonstrated emergent few-shot in-context learning at scale; introduced pre-normalisation as a training stability technique.</td>
+      </tr>
+
+      <tr>
+        <td class="date">Jun 2020</td>
+        <td><span class="model-name">GShard</span><span class="org">Google</span></td>
+        <td><span class="params">600B</span><span class="arch">Coarse sparse MoE, top-k routing</span></td>
+        <td class="key">First to scale MoE to 600B parameters via top-k routing; established the blueprint DeepSeek later refined.
+          <span class="note">Note: Shazeer et al.'s Jan 2017 Sparse MoE paper introduced the expert routing concept this builds on.</span>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="date">Apr 2021</td>
+        <td><span class="model-name">RoPE</span><span class="org">Su et al.</span></td>
+        <td><span class="params">—</span><span class="arch">Positional encoding</span></td>
+        <td class="key">Rotary positional embeddings; hybrid absolute/relative encoding that generalises better to longer sequences than learned absolute positions.</td>
+      </tr>
+
+      <tr>
+        <td class="date">Mar 2022</td>
+        <td><span class="model-name">Chinchilla</span><span class="org">DeepMind</span></td>
+        <td><span class="params">70B</span><span class="arch">Dense Transformer</span></td>
+        <td class="key">Compute-optimal scaling: more tokens on a smaller model beats a bigger undertrained model at the same compute budget. Rewrote scaling law intuitions.</td>
+      </tr>
+
+      <tr>
+        <td class="date">Mar 2022</td>
+        <td><span class="model-name">InstructGPT / RLHF</span><span class="org">OpenAI</span></td>
+        <td><span class="params">1.3B – 175B</span><span class="arch">RLHF (SFT + RM + PPO)</span></td>
+        <td class="key">Introduced the three-stage RLHF pipeline — supervised finetuning, reward modelling, PPO — that turned raw pretrained LLMs into usable instruction-following assistants.</td>
+      </tr>
+
+      <tr>
+        <td class="date">May 2022</td>
+        <td><span class="model-name">FlashAttention</span><span class="org">Dao et al.</span></td>
+        <td><span class="params">—</span><span class="arch">IO-aware exact attention</span></td>
+        <td class="key">Rewrote attention to be memory-efficient and fast via tiled IO; unlocked practical long-context training and became the de-facto attention kernel.</td>
+      </tr>
+
+      <tr>
+        <td class="date">Nov 2022</td>
+        <td><span class="model-name">ChatGPT</span><span class="org">OpenAI</span></td>
+        <td><span class="params">GPT-3.5 class</span><span class="arch">RLHF Chat Assistant</span></td>
+        <td class="key">Wrapped an RLHF-tuned LLM in a conversational web interface. Not a base architectural breakthrough, but it proved the commercial viability of chat-aligned models and triggered the global generative AI boom.</td>
+      </tr>
+<tr>
+        <td class="date">Feb 2023</td>
+        <td><span class="model-name">LLaMA 1</span><span class="org">Meta</span></td>
+        <td><span class="params">7B – 65B</span><span class="arch">Dense + RoPE / SwiGLU / RMSNorm / FlashAttention</span></td>
+        <td class="key">Synthesised the standard modern decoder recipe by combining RoPE, SwiGLU, RMSNorm, and FlashAttention; proved data quality beats raw scale; sparked the open-source LLM explosion.</td>
+      </tr>
+
+      <tr>
+        <td class="date">Mar 2023</td>
+        <td>
+          <span class="model-name">GPT-4 <span class="tag tag-unconfirmed">leak</span></span>
+          <span class="org">OpenAI</span>
+        </td>
+        <td><span class="params">~1.8T total · ~280B active</span><span class="arch">Reported: coarse MoE, top-2 of 16</span></td>
+        <td class="key">Major capability milestone. Architecture figures (1.8T / 16 experts / top-2) are from leaks reported Jul 2023, not an official release; validated and accelerated the industry's MoE direction.</td>
+      </tr>
+
+      <tr>
+        <td class="date">Jul 2023</td>
+        <td><span class="model-name">LLaMA 2</span><span class="org">Meta</span></td>
+        <td><span class="params">7B – 70B</span><span class="arch">Dense + GQA</span></td>
+        <td class="key">Added RLHF-based chat alignment; introduced Grouped-Query Attention (GQA) for faster inference at larger scales.</td>
+      </tr>
+
+      <tr class="row-milestone">
+        <td class="date">Dec 2023</td>
+        <td>
+          <span class="model-name">Mixtral 8×7B <span class="tag tag-open">open</span></span>
+          <span class="org">Mistral AI</span>
+        </td>
+        <td><span class="params">46.7B total · 12.9B active</span><span class="arch">Coarse MoE, top-2 of 8 experts</span></td>
+        <td class="key">First open-weight MoE with broad adoption (11 Dec 2023); showed sparse routing could beat dense models at equal active-parameter cost.</td>
+      </tr>
+
+      <tr class="row-milestone">
+        <td class="date">May 2024</td>
+        <td><span class="model-name">DeepSeek V2</span><span class="org">DeepSeek</span></td>
+        <td><span class="params">236B total · 21B active</span><span class="arch">Fine-grained MoE + MLA</span></td>
+        <td class="key">Invented MLA (compressed KV cache) and DeepSeekMoE — fine-grained experts with shared expert isolation.</td>
+      </tr>
+
+      <tr>
+        <td class="date">Jul 2024</td>
+        <td><span class="model-name">LLaMA 3.1</span><span class="org">Meta</span></td>
+        <td><span class="params">405B</span><span class="arch">Dense + 128K context</span></td>
+        <td class="key">Released 23 Jul 2024. First open model genuinely competitive with top closed models; proved open dense could match closed at frontier scale.</td>
+      </tr>
+
+      <tr class="row-milestone">
+        <td class="date">Dec 2024</td>
+        <td>
+          <span class="model-name">DeepSeek V3 <span class="tag tag-open">open</span></span>
+          <span class="org">DeepSeek</span>
+        </td>
+        <td><span class="params">671B total · 37B active</span><span class="arch">MoE + FP8 training + MTP</span></td>
+        <td class="key">Auxiliary-loss-free load balancing; FP8 training; multi-token prediction; ~$6M training cost — redefined efficiency expectations.</td>
+      </tr>
+
+      <tr class="row-milestone">
+        <td class="date">Sep 2024</td>
+        <td>
+          <span class="model-name">OpenAI o1 <span class="tag tag-"></span></span>
+          <span class="org">OpenAI</span>
+        </td>
+        <td><span class="params">671B total · 37B active</span><span class="arch">MoE + FP8 training + MTP</span></td>
+        <td class="key">First model to replace pre-training scaling with test-time compute scaling; uses reinforcement learning to produce extended internal chain-of-thought before answering. Introduced a new reasoning paradigm that directly inspired DeepSeek R1.</td>
+      </tr>
+<tr class="row-milestone">
+        <td class="date">Jan 2025</td>
+        <td>
+          <span class="model-name">DeepSeek R1 <span class="tag tag-open">open</span></span>
+          <span class="org">DeepSeek</span>
+        </td>
+        <td><span class="params">671B total · 37B active</span><span class="arch">V3 arch + pure RL post-training</span></td>
+        <td class="key">First open model to match o1-level reasoning using pure reinforcement learning, with no supervised finetuning warm-up.</td>
+      </tr>
+
+      <tr class="row-milestone">
+        <td class="date">Jul 2025</td>
+        <td>
+          <span class="model-name">Kimi K2 <span class="tag tag-open">open</span></span>
+          <span class="org">Moonshot AI</span>
+        </td>
+        <td><span class="params">1T total · 32B active</span><span class="arch">MoE + MLA + MuonClip</span></td>
+        <td class="key">1T-scale open MoE from Moonshot AI; used MuonClip (Muon optimiser variant) for training stability at trillion-parameter scale.</td>
+      </tr>
+
+      <tr class="row-milestone">
+        <td class="date">Apr 2026</td>
+        <td>
+          <span class="model-name">Kimi K2.6 <span class="tag tag-open">open</span></span>
+          <span class="org">Moonshot AI</span>
+        </td>
+        <td><span class="params">1T total · 32B active</span><span class="arch">MoE + MLA + MuonClip, 384 experts, 256K ctx</span></td>
+        <td class="key">Released 20 Apr 2026. Expanded to 384 experts, 256K context; agent-swarm workflows with up to 300 parallel sub-agents across 4,000 coordinated steps.</td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+
+<script>
+(function(){
+  const btn = document.querySelector('[data-theme-toggle]');
+  const root = document.documentElement;
+  let dark = matchMedia('(prefers-color-scheme: dark)').matches;
+  root.setAttribute('data-theme', dark ? 'dark' : 'light');
+  updateBtn();
+  btn.addEventListener('click', () => { dark = !dark; root.setAttribute('data-theme', dark ? 'dark' : 'light'); updateBtn(); });
+  function updateBtn() {
+    btn.innerHTML = dark
+      ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg> Light mode'
+      : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> Dark mode';
+    btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+})();
+</script>
+</body>
+</html>
