@@ -32,7 +32,7 @@ Key architectural milestones, 2017 to Apr 2026.
 
 This is a compact educational architecture that is GPT-2-inspired but includes a few modern LLaMA-like choices.
 
-Reference implementation: [microgpt.py](https://github.com/eniompw/microgpt/blob/main/microgpt.py)
+Reference implementation: [microgpt.py](https://gist.github.com/karpathy/8627fe009c40f57531cb18360106ce95)
 
 ### Key Architectural Ideas
 
